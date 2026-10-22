@@ -1,0 +1,7 @@
+{
+  "board_w": 9,
+  "board_h": 6,
+  "square_size": 0.025,
+  "min_valid_ratio": 0.80,
+  "timeout_seconds": 300.0
+}

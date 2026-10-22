@@ -1,0 +1,25 @@
+# Local builds and dependencies
+/build*/
+/.deps/
+/.venv/
+/venv/
+
+# Generated images and local calibration audit records
+/sample_data/
+/logs/
+
+# Python and editor caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.DS_Store
+
+# Local credentials and environment configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
