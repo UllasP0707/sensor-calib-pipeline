@@ -42,4 +42,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Compile CUDA backend and tests (no GPU execution)
-        run: docker build -f sim/Dockerfile.cuda --build-arg CUDA_ARCHITECTURES=75 --target build -t truck-sim-cuda-build .
+        run: |
+          docker build -f sim/Dockerfile.cuda --build-arg CUDA_ARCHITECTURES=75 -t truck-sim-cuda .
+          docker run --rm --entrypoint /app/test_sim truck-sim-cuda

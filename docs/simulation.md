@@ -128,6 +128,20 @@ CPU compute timing includes the worker dispatch/wait. CUDA events split upload, 
 
 CI compiles CUDA without a GPU on an ordinary GitHub Linux runner. The separately dispatched GPU validation workflow requires a **trusted self-hosted Linux NVIDIA runner labeled `gpu`** and explicitly checks that GPU execution is available before running parity/memory checks. It is never triggered automatically for public pull requests. No self-hosted runner is provisioned by this project. Local macOS verification exercises CPU code only.
 
+## Observed local results
+
+On Apple M2 / macOS, Release C++17 build, 200 measured batches after warmup, seed 42:
+
+| Environments | One CPU worker | Four CPU workers | Four-worker batch p95 |
+| --- | ---: | ---: | ---: |
+| 128 | 4.75M transitions/s | 2.03M transitions/s | 0.083 ms |
+| 4,096 | 25.17M transitions/s | 34.88M transitions/s | 0.137 ms |
+| 65,536 | 27.55M transitions/s | 72.66M transitions/s | 0.965 ms |
+
+These are individual runs on a very small numerical model, including host-interface and reset costs, not a claim about photorealistic AV simulation throughput. At 65,536 environments four workers were about 2.64× faster; at 128 environments synchronization overhead outweighed parallel work. No GPU timing was measured on this Mac.
+
+A 30-update PPO run (128 environments × 128 rollout steps, seed 42, PyTorch CPU) collected 491,520 transitions. On 64 fixed evaluation episodes with seed 2026, the initial zero-mean policy achieved 15.6% success / −8.99 mean return; after training it achieved 76.6% / 18.31. This is one controlled experiment on a toy task, not an autonomous-driving performance claim. Checkpoints and complete logs are generated locally under `runs/` and excluded from Git.
+
 ## References
 
 - [NVIDIA CUDA programming guide](https://docs.nvidia.com/cuda/cuda-programming-guide/)
