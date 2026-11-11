@@ -1,6 +1,19 @@
-# Automated Sensor Calibration & Cloud Pipeline
+# Automated Sensor Calibration, Simulation & RL Pipeline
 
 A C++17/OpenCV intrinsic camera calibration engine with a Python 3.10+ operator CLI, durable local audit records, and optional AWS S3 synchronization. It runs without a camera or cloud account using the supplied synthetic-data generator.
+
+## Batched simulation and reinforcement learning
+
+The project now also includes a C++17 highway simulator with a persistent CPU worker pool, optional CUDA kernels, a Python batch interface, and PyTorch PPO training. Accepted calibration logs can project simulated lane points through the calibrated camera model. [Read the simulation guide](docs/simulation.md) for build commands, model assumptions, profiling, and CPU/GPU validation.
+
+```bash
+pip install -r sim/requirements.txt
+make build
+python sim/python/benchmark_sim.py --counts 128 4096 65536 --workers 4
+python sim/python/train_ppo.py --envs 128 --updates 30
+```
+
+The simulation is a simplified highway-control environment with a kinematic bicycle model, not an autonomous-truck digital twin. CUDA requires an NVIDIA GPU; macOS uses the explicitly selected CPU backend. Training and simulation communicate through host arrays, so no zero-copy GPU integration is claimed. The original calibration commands and artifacts remain supported.
 
 ## Architecture
 

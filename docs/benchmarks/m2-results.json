@@ -1,0 +1,215 @@
+{
+  "description": "Local Apple M2 CPU experiments; no GPU runtime measurements. Performance is workload-specific.",
+  "observation": [
+    "y/2.25",
+    "yaw",
+    "speed/20",
+    "gap/100",
+    "lead_speed/20",
+    "x/300"
+  ],
+  "cpu_one": [
+    {
+      "backend": "cpu",
+      "environments": 128,
+      "workers": 1,
+      "steps": 200,
+      "useful_transitions": 25600,
+      "seed": 42,
+      "seconds": 0.005258208024315536,
+      "transitions_per_second": 4868578.778476982,
+      "batch_latency_ms_p50": 0.025457993615418673,
+      "batch_latency_ms_p95": 0.02717223251238465,
+      "mean_step_phase_ms": {
+        "upload": 0.0,
+        "compute": 0.003804609983926639,
+        "download": 0.0
+      },
+      "reset_episodes": 276,
+      "state_sha256": "85c694f2b0b598a3e3f684f75dfc4c1824e61cad19afad96fcab0379f823baee",
+      "state_checksum": 32226.415636343852,
+      "cuda_step_transfer_bytes": 0,
+      "timing_scope": "step + native output copies + Python arrays + completed-episode resets; excludes policy and action generation"
+    },
+    {
+      "backend": "cpu",
+      "environments": 4096,
+      "workers": 1,
+      "steps": 200,
+      "useful_transitions": 819200,
+      "seed": 42,
+      "seconds": 0.03284379100659862,
+      "transitions_per_second": 24942309.486606315,
+      "batch_latency_ms_p50": 0.16066699754446745,
+      "batch_latency_ms_p95": 0.18706904374994338,
+      "mean_step_phase_ms": {
+        "upload": 0.0,
+        "compute": 0.12153188489377499,
+        "download": 0.0
+      },
+      "reset_episodes": 9033,
+      "state_sha256": "61ae0c4b328cc0a0f9763feac8a5a21b7b0abe5a074d6ff9727fb9ecc9abff59",
+      "state_checksum": 1067895.9850866531,
+      "cuda_step_transfer_bytes": 0,
+      "timing_scope": "step + native output copies + Python arrays + completed-episode resets; excludes policy and action generation"
+    },
+    {
+      "backend": "cpu",
+      "environments": 65536,
+      "workers": 1,
+      "steps": 200,
+      "useful_transitions": 13107200,
+      "seed": 42,
+      "seconds": 0.46506724995560944,
+      "transitions_per_second": 28183450.890706837,
+      "batch_latency_ms_p50": 2.3337705060839653,
+      "batch_latency_ms_p95": 2.379343763459474,
+      "mean_step_phase_ms": {
+        "upload": 0.0,
+        "compute": 1.9343337392807007,
+        "download": 0.0
+      },
+      "reset_episodes": 143702,
+      "state_sha256": "41251752d15d0a55734b9d62c83879b2c157753a78eed908869149bba89df20b",
+      "state_checksum": 17146464.314459346,
+      "cuda_step_transfer_bytes": 0,
+      "timing_scope": "step + native output copies + Python arrays + completed-episode resets; excludes policy and action generation"
+    }
+  ],
+  "cpu_four": [
+    {
+      "backend": "cpu",
+      "environments": 128,
+      "workers": 4,
+      "steps": 200,
+      "useful_transitions": 25600,
+      "seed": 42,
+      "seconds": 0.012732625007629395,
+      "transitions_per_second": 2010583.048244998,
+      "batch_latency_ms_p50": 0.06324998685158789,
+      "batch_latency_ms_p95": 0.08824202523101118,
+      "mean_step_phase_ms": {
+        "upload": 0.0,
+        "compute": 0.018684844952076674,
+        "download": 0.0
+      },
+      "reset_episodes": 276,
+      "state_sha256": "85c694f2b0b598a3e3f684f75dfc4c1824e61cad19afad96fcab0379f823baee",
+      "state_checksum": 32226.415636343852,
+      "cuda_step_transfer_bytes": 0,
+      "timing_scope": "step + native output copies + Python arrays + completed-episode resets; excludes policy and action generation"
+    },
+    {
+      "backend": "cpu",
+      "environments": 4096,
+      "workers": 4,
+      "steps": 200,
+      "useful_transitions": 819200,
+      "seed": 42,
+      "seconds": 0.023269457975402474,
+      "transitions_per_second": 35204945.506936796,
+      "batch_latency_ms_p50": 0.11443800758570433,
+      "batch_latency_ms_p95": 0.13547153212130064,
+      "mean_step_phase_ms": {
+        "upload": 0.0,
+        "compute": 0.0535548498108983,
+        "download": 0.0
+      },
+      "reset_episodes": 9033,
+      "state_sha256": "61ae0c4b328cc0a0f9763feac8a5a21b7b0abe5a074d6ff9727fb9ecc9abff59",
+      "state_checksum": 1067895.9850866531,
+      "cuda_step_transfer_bytes": 0,
+      "timing_scope": "step + native output copies + Python arrays + completed-episode resets; excludes policy and action generation"
+    },
+    {
+      "backend": "cpu",
+      "environments": 65536,
+      "workers": 4,
+      "steps": 200,
+      "useful_transitions": 13107200,
+      "seed": 42,
+      "seconds": 0.390852791024372,
+      "transitions_per_second": 33534876.303806894,
+      "batch_latency_ms_p50": 1.512479007942602,
+      "batch_latency_ms_p95": 4.003284836653617,
+      "mean_step_phase_ms": {
+        "upload": 0.0,
+        "compute": 1.365911051928997,
+        "download": 0.0
+      },
+      "reset_episodes": 143702,
+      "state_sha256": "41251752d15d0a55734b9d62c83879b2c157753a78eed908869149bba89df20b",
+      "state_checksum": 17146464.314459346,
+      "cuda_step_transfer_bytes": 0,
+      "timing_scope": "step + native output copies + Python arrays + completed-episode resets; excludes policy and action generation"
+    }
+  ],
+  "training": {
+    "seed": 42,
+    "backend": "cpu",
+    "policy_device": "cpu",
+    "torch_version": "2.15.0",
+    "transitions": 491520,
+    "training_seconds": 4.8713760420214385,
+    "before": {
+      "mean_return": -8.991509935545363,
+      "success_rate": 0.15625,
+      "episodes": 64,
+      "seed": 2026
+    },
+    "after": {
+      "mean_return": 23.842647606084938,
+      "success_rate": 1.0,
+      "episodes": 64,
+      "seed": 2026
+    }
+  },
+  "repeat_parameters_identical": true,
+  "held_out_evaluation": [
+    {
+      "seed": 100,
+      "baseline": {
+        "mean_return": -6.469855943053972,
+        "success_rate": 0.203125,
+        "episodes": 64,
+        "seed": 100
+      },
+      "trained": {
+        "mean_return": 24.074914554661518,
+        "success_rate": 1.0,
+        "episodes": 64,
+        "seed": 100
+      }
+    },
+    {
+      "seed": 200,
+      "baseline": {
+        "mean_return": -5.743140866057061,
+        "success_rate": 0.25,
+        "episodes": 64,
+        "seed": 200
+      },
+      "trained": {
+        "mean_return": 23.453003981696384,
+        "success_rate": 0.984375,
+        "episodes": 64,
+        "seed": 200
+      }
+    },
+    {
+      "seed": 300,
+      "baseline": {
+        "mean_return": -6.002664277273709,
+        "success_rate": 0.1875,
+        "episodes": 64,
+        "seed": 300
+      },
+      "trained": {
+        "mean_return": 23.92915452911984,
+        "success_rate": 1.0,
+        "episodes": 64,
+        "seed": 300
+      }
+    }
+  ]
+}

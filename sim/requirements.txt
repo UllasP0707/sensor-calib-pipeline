@@ -1,0 +1,2 @@
+# Install the original requirements.txt first for NumPy and pytest.
+torch>=2.5,<3

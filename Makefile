@@ -10,16 +10,16 @@ SENSOR_ID ?= front_camera
 
 .PHONY: build test lint generate-data run-pipeline e2e asan
 build:
-	$(CMAKE) -S . -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Release $(CMAKE_ARGS)
+	$(CMAKE) -S . -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Release -DBUILD_CALIBRATION=ON $(CMAKE_ARGS)
 	$(CMAKE) --build $(BUILD_DIR) --parallel $(JOBS)
 
 lint:
-	$(PYTHON) -m ruff check --isolated --target-version py310 --select E4,E7,E9,F,I scripts tests
-	$(PYTHON) -m black --check scripts tests
+	$(PYTHON) -m ruff check --isolated --target-version py310 --select E4,E7,E9,F,I scripts tests sim
+	$(PYTHON) -m black --check scripts tests sim
 
 test: build lint
 	$(CMAKE) --build $(BUILD_DIR) --target test -- ARGS=--output-on-failure
-	$(PYTHON) -m pytest -q tests/test_pipeline.py
+	$(PYTHON) -m pytest -q tests/test_pipeline.py sim/tests/test_simulation.py
 
 generate-data:
 	$(PYTHON) scripts/generate_synthetic_data.py --scale $(SCALE) --output-dir "$(IMAGE_DIR)"
@@ -32,3 +32,14 @@ e2e: build
 
 asan:
 	$(MAKE) test BUILD_DIR=build-asan CMAKE_ARGS="$(CMAKE_ARGS) -DENABLE_ASAN=ON"
+
+.PHONY: sim-build sim-benchmark train-ppo
+sim-build:
+	$(CMAKE) -S . -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Release -DBUILD_CALIBRATION=OFF $(CMAKE_ARGS)
+	$(CMAKE) --build $(BUILD_DIR) --parallel $(JOBS)
+
+sim-benchmark:
+	$(PYTHON) sim/python/benchmark_sim.py
+
+train-ppo:
+	$(PYTHON) sim/python/train_ppo.py
