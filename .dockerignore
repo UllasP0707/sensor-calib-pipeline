@@ -13,3 +13,6 @@ logs
 *.pem
 *.key
 .DS_Store
+
+runs
+*.pt

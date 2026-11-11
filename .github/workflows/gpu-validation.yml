@@ -1,0 +1,31 @@
+name: Manual NVIDIA GPU validation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gpu-tests:
+    # Explicit manual use on a trusted Linux runner with CUDA Toolkit and NVIDIA GPU.
+    # Never attach an untrusted public-PR job to this runner.
+    runs-on: [self-hosted, linux, x64, gpu]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and require GPU execution
+        run: |
+          cmake -S . -B build -DBUILD_CALIBRATION=OFF -DENABLE_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=native
+          cmake --build build --parallel 4
+          python3 -m venv .venv
+          .venv/bin/pip install numpy pytest
+          PYTHONPATH=sim/python .venv/bin/python -c 'from truck_env import load_library; assert load_library().sim_cuda_available(), "GPU is required"'
+          ctest --test-dir build --output-on-failure
+          .venv/bin/python -m pytest -q sim/tests/test_simulation.py
+          compute-sanitizer --tool memcheck --error-exitcode=1 ./build/test_sim --gtest_filter=Cuda.*
+      - name: Measure GPU and CPU on identical batch sizes
+        run: |
+          .venv/bin/python sim/python/benchmark_sim.py --backend cpu --counts 128 4096 65536 --output runs/cpu.json
+          .venv/bin/python sim/python/benchmark_sim.py --backend cuda --counts 128 4096 65536 --output runs/cuda.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gpu-validation-benchmarks
+          path: runs/*.json

@@ -1,0 +1,45 @@
+name: Calibration and simulation CI
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux-tests:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install native and Python dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libopencv-dev nlohmann-json3-dev libgtest-dev
+          python -m pip install -r requirements.txt
+          python -m pip install 'torch>=2.5,<3' --index-url https://download.pytorch.org/whl/cpu
+      - name: Build, lint and test
+        run: make test PYTHON=python
+      - name: Calibration end-to-end
+        run: make e2e PYTHON=python
+      - name: CPU AddressSanitizer
+        run: |
+          cmake -S . -B build-sim-asan -DBUILD_CALIBRATION=OFF -DENABLE_ASAN=ON
+          cmake --build build-sim-asan --parallel 2
+          ctest --test-dir build-sim-asan --output-on-failure
+      - name: Small benchmark artifact
+        run: python sim/python/benchmark_sim.py --counts 128 4096 --steps 50 --output runs/ci-benchmark.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cpu-benchmark
+          path: runs/ci-benchmark.json
+  cuda-compile:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile CUDA backend and tests (no GPU execution)
+        run: docker build -f sim/Dockerfile.cuda --build-arg CUDA_ARCHITECTURES=75 --target build -t truck-sim-cuda-build .

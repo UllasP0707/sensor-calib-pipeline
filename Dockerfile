@@ -8,7 +8,7 @@ COPY CMakeLists.txt ./
 COPY include ./include
 COPY src ./src
 COPY tests/test_calib_engine.cpp ./tests/test_calib_engine.cpp
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON \
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DBUILD_SIMULATION=OFF \
     && cmake --build build --parallel 4 \
     && ctest --test-dir build --output-on-failure
 

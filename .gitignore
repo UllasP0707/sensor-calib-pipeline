@@ -23,3 +23,7 @@ htmlcov/
 !.env.example
 *.pem
 *.key
+
+# Simulation checkpoints and local benchmark outputs
+/runs/
+*.pt

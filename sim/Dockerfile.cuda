@@ -1,0 +1,28 @@
+FROM nvidia/cuda:12.6.3-devel-ubuntu22.04 AS build
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake g++ make git ca-certificates libgtest-dev \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY CMakeLists.txt ./
+COPY sim ./sim
+# Override for the deployment GPU. PTX in the final architecture allows forward JIT.
+ARG CUDA_ARCHITECTURES="75;80;86;89;90"
+RUN cmake -S . -B build -DBUILD_CALIBRATION=OFF -DENABLE_CUDA=ON \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHITECTURES}" \
+    && cmake --build build --parallel 4
+
+FROM nvidia/cuda:12.6.3-runtime-ubuntu22.04 AS runtime
+ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1 TRUCK_SIM_LIBRARY=/app/libtruck_sim.so
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m pip install --no-cache-dir 'numpy>=1.26,<3' \
+    && useradd --create-home --uid 10001 sim
+WORKDIR /app
+COPY --from=build /src/build/libtruck_sim.so ./
+COPY --from=build /src/build/test_sim ./test_sim
+COPY sim/python ./python
+RUN mkdir /app/runs && chown sim:sim /app/runs
+USER sim
+ENTRYPOINT ["python3", "/app/python/benchmark_sim.py"]
+CMD ["--backend", "cuda", "--counts", "4096", "65536"]
