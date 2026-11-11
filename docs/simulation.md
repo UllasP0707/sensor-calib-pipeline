@@ -66,9 +66,9 @@ Each environment simulates one controlled rigid vehicle and a constant-speed lea
 
 Units are meters, seconds and radians. Native state uses structure-of-arrays layout `[field * N + environment]` for coalesced adjacent-thread state access. Public observations/state are conventional `[N, 6]` arrays.
 
-State: `[x, y, yaw, speed, lead_x, lead_speed]`.
+State: `[x, y, yaw, speed, lead_x, lead_speed]`. The observation includes goal progress so that reward and goal termination are determined by the observed physical state; the external time limit is handled through truncation and value bootstrapping.
 
-Observation: `[y/2.25, yaw, speed/20, (lead_x-x)/100, lead_speed/20, remaining_horizon_fraction]`.
+Observation: `[y/2.25, yaw, speed/20, (lead_x-x)/100, lead_speed/20, x/300]`.
 
 Actions: `[normalized_acceleration, normalized_steering]`, clamped to `[-1,1]` and scaled to ±3 m/s² and ±0.35 rad. Non-finite actions are rejected before any state update. For wheelbase `L=5m` and timestep `dt=0.1s`:
 
@@ -134,13 +134,19 @@ On Apple M2 / macOS, Release C++17 build, 200 measured batches after warmup, see
 
 | Environments | One CPU worker | Four CPU workers | Four-worker batch p95 |
 | --- | ---: | ---: | ---: |
-| 128 | 4.75M transitions/s | 2.03M transitions/s | 0.083 ms |
-| 4,096 | 25.17M transitions/s | 34.88M transitions/s | 0.137 ms |
-| 65,536 | 27.55M transitions/s | 72.66M transitions/s | 0.965 ms |
+| 128 | 4.87M transitions/s | 2.01M transitions/s | 0.088 ms |
+| 4,096 | 24.94M transitions/s | 35.20M transitions/s | 0.135 ms |
+| 65,536 | 28.18M transitions/s | 33.53M transitions/s | 4.003 ms |
 
-These are individual runs on a very small numerical model, including host-interface and reset costs, not a claim about photorealistic AV simulation throughput. At 65,536 environments four workers were about 2.64× faster; at 128 environments synchronization overhead outweighed parallel work. No GPU timing was measured on this Mac.
+These are individual runs on a very small numerical model, including host-interface and reset costs, not a claim about photorealistic AV simulation throughput. At 65,536 environments four workers were about 1.19× faster; at 128 environments synchronization overhead outweighed parallel work. No GPU timing was measured on this Mac.
 
-A 30-update PPO run (128 environments × 128 rollout steps, seed 42, PyTorch CPU) collected 491,520 transitions. On 64 fixed evaluation episodes with seed 2026, the initial zero-mean policy achieved 15.6% success / −8.99 mean return; after training it achieved 76.6% / 18.31. This is one controlled experiment on a toy task, not an autonomous-driving performance claim. Checkpoints and complete logs are generated locally under `runs/` and excluded from Git.
+A 30-update PPO run (128 environments × 128 rollout steps, seed 42, PyTorch CPU) collected 491,520 transitions. On 64 fixed evaluation episodes with seed 2026, the initial zero-mean policy achieved 15.6% success / −8.99 mean return; after training it achieved 100.0% / 23.84. This is one controlled experiment on a toy task, not an autonomous-driving performance claim. Checkpoints and complete logs are generated locally under `runs/` and excluded from Git.
+
+A second identical training run reproduced every model parameter and fixed-seed evaluation metric. The saved policy achieved 99.5% aggregate success across 192 held-out episodes (seeds 100, 200 and 300). Reproduce the comparison against the initial zero-action baseline with:
+
+```bash
+python sim/python/evaluate_policy.py --checkpoint runs/ppo/policy.pt --seeds 100 200 300
+```
 
 ## References
 

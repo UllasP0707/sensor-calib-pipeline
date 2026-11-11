@@ -40,7 +40,7 @@ SIM_HD inline void observe(Buffers b, Config c, int i) {
     o[2] = b.state[3 * n + i] / 20.0F;
     o[3] = (b.state[4 * n + i] - b.state[i]) / 100.0F;
     o[4] = b.state[5 * n + i] / 20.0F;
-    o[5] = 1.0F - static_cast<float>(b.steps[i]) / static_cast<float>(c.horizon);
+    o[5] = b.state[i] / 300.0F;  // progress makes goal-dependent rewards observable
 }
 SIM_HD inline void reset_one(Buffers b, Config c, int i, std::uint32_t seed, bool all) {
     if (!all && !(b.terminated[i] || b.truncated[i])) return;

@@ -45,7 +45,7 @@ def test_terminal_freeze_and_selective_reset(backend):
         assert not reward.any()
         reset = env.reset_done()
         assert not np.array_equal(reset, first)
-        assert (reset[:, 5] == 1).all()
+        assert (reset[:, 5] == 0).all()
         np.testing.assert_array_equal(env.reset_done(), reset)
 
 
